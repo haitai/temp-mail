@@ -612,9 +612,11 @@ const closeModal = document.getElementById('closeModal');
 
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
-	loadDomains();
+	loadDomains().then(() => {
+		// 域名加载完成后再恢复邮箱状态
+		restoreEmailState();
+	});
 	setupEventListeners();
-	restoreEmailState();
 });
 
 // 设置事件监听器
@@ -654,11 +656,14 @@ async function loadDomains() {
 		if (data.success) {
 			domains = data.result;
 			populateDomainSelect();
+			return Promise.resolve();
 		} else {
 			console.error('Failed to load domains:', data.error);
+			return Promise.reject(new Error(data.error));
 		}
 	} catch (error) {
 		console.error('Error loading domains:', error);
+		return Promise.reject(error);
 	}
 }
 
@@ -1198,6 +1203,8 @@ function restoreEmailState() {
 		emailPrefixInput.value = emailState.prefix || '';
 		emailDomainSelect.value = emailState.domain || '';
 		emailInput.value = currentEmail;
+		
+		// 域名下拉框已经通过设置value自动显示选中状态，无需额外操作
 		
 		// 启用相关按钮
 		copyBtn.disabled = false;
