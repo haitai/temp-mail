@@ -237,7 +237,7 @@ body {
 	color: white;
 	padding: 5px 12px;
 	border-radius: 20px;
-	font-size: 0.9rem;
+	font-size: 0.8rem;
 	font-weight: 500;
 }
 
@@ -401,6 +401,9 @@ body {
 .btn-danger {
 	background-color: #dc3545;
 	color: white;
+	padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
 }
 
 .btn-danger:hover:not(:disabled) {
