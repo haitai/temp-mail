@@ -20,14 +20,12 @@ app.onError((err, c) => {
 });
 
 // --- Routes ---
-// Static Routes (must be first to handle root path)
-app.route("/", staticRoutes);
-// Email Routes
+// API Routes (must be first to avoid conflicts with static routes)
 app.route("/", emailRoutes);
-// Attachment Routes
 app.route("/", attachmentRoutes);
-// Health Check
 app.route("/", healthRoutes);
+// Static Routes (must be last to handle root path and catch-all)
+app.route("/", staticRoutes);
 
 // --- OpenAPI Documentation ---
 setupDocumentation(app);

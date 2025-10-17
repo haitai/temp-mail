@@ -177,6 +177,70 @@ body {
 	border-color: #667eea;
 }
 
+.email-input-with-copy {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.email-input-with-copy input {
+	flex: 1;
+	padding-right: 40px;
+}
+
+.copy-btn {
+	position: absolute;
+	right: 8px;
+	top: 40%;
+	transform: translateY(-50%);
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	border-radius: 4px;
+	color: #666;
+	transition: all 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.copy-btn:hover {
+	background-color: #f0f0f0;
+	color: #333;
+}
+
+.copy-btn:active {
+	background-color: #e0e0e0;
+}
+
+.email-url-display {
+	margin-top: 10px;
+}
+
+.email-url-display label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: 500;
+	color: #333;
+}
+
+.url-input-with-copy {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.url-input-with-copy input {
+	width: 100%;
+	padding: 8px 40px 8px 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 14px;
+	background-color: #f8f9fa;
+	color: #666;
+}
+
 .email-actions-row {
 	display: flex;
 	gap: 10px;
@@ -496,6 +560,60 @@ body {
 	background-color: white;
 }
 
+/* 刷新图标按钮样式 */
+.refresh-icon-btn {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	border-radius: 4px;
+	color: #666;
+	transition: all 0.2s ease;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 8px;
+	vertical-align: middle;
+}
+
+.refresh-icon-btn:hover {
+	background-color: #f0f0f0;
+	color: #333;
+}
+
+.refresh-icon-btn:active {
+	background-color: #e0e0e0;
+}
+
+.refresh-icon-btn:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.refresh-icon-btn:disabled:hover {
+	background-color: transparent;
+	color: #666;
+}
+
+/* 旋转动画 */
+.refresh-icon-btn.rotating svg {
+	animation: rotate 1s linear infinite !important;
+	transform-origin: center !important;
+}
+
+.refresh-icon-btn.rotating {
+	pointer-events: none;
+}
+
+@keyframes rotate {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
 	.main-content {
@@ -601,9 +719,10 @@ let domains = [];
 const emailPrefixInput = document.getElementById('emailPrefix');
 const emailDomainSelect = document.getElementById('emailDomain');
 const emailInput = document.getElementById('emailAddress');
+const emailUrlInput = document.getElementById('emailUrl');
 const generateBtn = document.getElementById('generateBtn');
-const randomPrefixBtn = document.getElementById('randomPrefixBtn');
-const copyBtn = document.getElementById('copyBtn');
+const copyEmailBtn = document.getElementById('copyEmailBtn');
+const copyUrlBtn = document.getElementById('copyUrlBtn');
 const refreshBtn = document.getElementById('refreshBtn');
 const clearBtn = document.getElementById('clearBtn');
 const emailCount = document.getElementById('emailCount');
@@ -622,11 +741,42 @@ document.addEventListener('DOMContentLoaded', function() {
 	setupEventListeners();
 });
 
+// 设置预设邮箱
+function setupPresetEmail(email) {
+	const emailParts = email.split('@');
+	const prefix = emailParts[0] || '';
+	const domain = emailParts[1] || '';
+	
+	// 设置输入框的值
+	emailPrefixInput.value = prefix;
+	emailDomainSelect.value = domain;
+	emailInput.value = email;
+	currentEmail = email;
+	updateEmailUrl(email);
+	
+	// 启用相关按钮
+	copyEmailBtn.disabled = false;
+	copyUrlBtn.disabled = false;
+	refreshBtn.disabled = false;
+	clearBtn.disabled = false;
+	
+	// 显示收件箱
+	showInbox();
+	
+	// 开始自动刷新
+	startAutoRefresh();
+	
+	// 立即刷新一次收件箱
+	refreshInbox();
+	
+	showNotification('已设置邮箱地址: ' + email, 'success');
+}
+
 // 设置事件监听器
 function setupEventListeners() {
 	generateBtn.addEventListener('click', generateEmail);
-	randomPrefixBtn.addEventListener('click', generateRandomPrefix);
-	copyBtn.addEventListener('click', copyEmail);
+	copyEmailBtn.addEventListener('click', copyEmail);
+	copyUrlBtn.addEventListener('click', copyUrl);
 	refreshBtn.addEventListener('click', refreshInbox);
 	clearBtn.addEventListener('click', clearInbox);
 	closeModal.addEventListener('click', closeEmailModal);
@@ -701,9 +851,21 @@ function updateEmailPreview() {
 	if (prefix && domain) {
 		currentEmail = \`\${prefix}@\${domain}\`;
 		emailInput.value = currentEmail;
+		updateEmailUrl(currentEmail);
 	} else {
 		emailInput.value = '';
 		currentEmail = '';
+		emailUrlInput.value = '';
+	}
+}
+
+// 更新邮箱URL显示
+function updateEmailUrl(email) {
+	if (email) {
+		const currentHost = window.location.origin;
+		emailUrlInput.value = currentHost + '/' + email;
+	} else {
+		emailUrlInput.value = '';
 	}
 }
 
@@ -736,12 +898,14 @@ function generateEmail() {
 	
 	currentEmail = \`\${prefix}@\${domain}\`;
 	emailInput.value = currentEmail;
+	updateEmailUrl(currentEmail);
 	
 	// 保存邮箱状态到缓存
 	saveEmailState();
 	
 	// 启用相关按钮
-	copyBtn.disabled = false;
+	copyEmailBtn.disabled = false;
+	copyUrlBtn.disabled = false;
 	refreshBtn.disabled = false;
 	clearBtn.disabled = false;
 	
@@ -778,6 +942,24 @@ async function copyEmail() {
 	}
 }
 
+// 复制URL
+async function copyUrl() {
+	if (!emailUrlInput.value) {
+		showNotification('请先生成邮箱地址', 'error');
+		return;
+	}
+	
+	try {
+		await navigator.clipboard.writeText(emailUrlInput.value);
+		showNotification('URL已复制到剪贴板', 'success');
+	} catch (error) {
+		// 降级方案
+		emailUrlInput.select();
+		document.execCommand('copy');
+		showNotification('URL已复制到剪贴板', 'success');
+	}
+}
+
 // 显示收件箱
 function showInbox() {
 	inboxEmpty.style.display = 'none';
@@ -789,8 +971,10 @@ function showInbox() {
 async function refreshInbox() {
 	if (!currentEmail) return;
 	
-	refreshBtn.innerHTML = '<span class="loading"></span> 刷新中...';
+	// 添加旋转动画
+	refreshBtn.classList.add('rotating');
 	refreshBtn.disabled = true;
+	console.log('旋转动画已添加，按钮类名:', refreshBtn.className);
 	
 	try {
 		const response = await fetch(\`/emails/\${encodeURIComponent(currentEmail)}\`);
@@ -808,8 +992,10 @@ async function refreshInbox() {
 		console.error('Error fetching emails:', error);
 		showNotification('网络错误，请稍后重试', 'error');
 	} finally {
-		refreshBtn.innerHTML = '刷新收件箱';
+		// 移除旋转动画
+		refreshBtn.classList.remove('rotating');
 		refreshBtn.disabled = false;
+		console.log('旋转动画已移除，按钮类名:', refreshBtn.className);
 	}
 }
 
@@ -1206,11 +1392,11 @@ function restoreEmailState() {
 		emailPrefixInput.value = emailState.prefix || '';
 		emailDomainSelect.value = emailState.domain || '';
 		emailInput.value = currentEmail;
+		updateEmailUrl(currentEmail);
 		
 		// 域名下拉框已经通过设置value自动显示选中状态，无需额外操作
 		
 		// 启用相关按钮
-		copyBtn.disabled = false;
 		refreshBtn.disabled = false;
 		clearBtn.disabled = false;
 		
@@ -1283,6 +1469,166 @@ window.addEventListener('beforeunload', function() {
 	});
 });
 
+// 邮箱地址重定向路由 - 处理 /<email> 格式的URL
+staticRoutes.get("/:email", async (c) => {
+	const email = c.req.param("email");
+	
+	// 排除API路由和静态资源
+	if (email === 'domains' || email === 'emails' || email === 'attachments' || 
+		email === 'health' || email === 'openapi.json' || email === 'docs' ||
+		email.startsWith('static/') || email.endsWith('.svg') || email.endsWith('.ico')) {
+		return c.text('Not Found', 404);
+	}
+	
+	// 验证邮箱地址格式
+	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	if (emailRegex.test(email)) {
+		// 如果URL中的邮箱地址格式正确，返回主页并设置邮箱
+		const html = `
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>临时邮箱服务</title>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+		<link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon-16.svg">
+		<link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon.svg">
+		<link rel="icon" type="image/svg+xml" sizes="48x48" href="/favicon-48.svg">
+		<link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+		<link rel="stylesheet" href="/static/style.css">
+	</head>
+<body>
+	<div class="container">
+		<header class="header">
+			<h1>临时邮箱服务</h1>
+		</header>
+
+		<div class="main-content">
+			<!-- 左侧栏：邮箱生成 -->
+			<div class="left-panel">
+				<div class="email-generator">
+					<h2>生成临时邮箱</h2>
+					<div class="email-display">
+						<div class="email-input-group">
+							<input type="text" id="emailPrefix" placeholder="自定义前缀">
+							<span class="email-separator">@</span>
+							<select id="emailDomain" class="domain-select">
+								<option value="">选择域名...</option>
+							</select>
+						</div>
+						<div class="email-input-with-copy">
+							<input type="text" id="emailAddress" readonly placeholder="完整邮箱地址将显示在这里">
+							<button id="copyEmailBtn" class="copy-btn" title="复制邮箱地址">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+									<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+								</svg>
+							</button>
+						</div>
+						<div class="email-url-display">
+							<label for="emailUrl">访问地址:</label>
+							<div class="url-input-with-copy">
+								<input type="text" id="emailUrl" readonly placeholder="完整URL将显示在这里">
+								<button id="copyUrlBtn" class="copy-btn" title="复制URL">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+										<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+									</svg>
+								</button>
+							</div>
+						</div>
+						<div class="email-actions-row">
+							<button id="generateBtn" class="btn btn-primary">生成新邮箱</button>
+						</div>
+					</div>
+					<div class="email-actions">
+						<!-- 刷新按钮已移至右栏标题 -->
+					</div>
+					<div class="email-info">
+						<p>邮箱将在24小时后自动删除</p>
+						<p>支持接收附件，最大50MB</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- 右侧栏：收件箱 -->
+			<div class="right-panel">
+				<div class="inbox">
+					<div class="inbox-header">
+						<h2>收件箱 <button id="refreshBtn" class="refresh-icon-btn" title="刷新收件箱">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<polyline points="23 4 23 10 17 10"></polyline>
+								<polyline points="1 20 1 14 7 14"></polyline>
+								<path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+							</svg>
+						</button></h2>
+						<div class="inbox-controls">
+							<span id="emailCount" class="email-count">0 封邮件</span>
+							<span id="autoRefreshStatus" class="auto-refresh-status" style="display: none;">
+								<span class="refresh-indicator"></span> 自动刷新中
+							</span>
+							<button id="clearBtn" class="btn btn-danger" disabled>清空收件箱</button>
+						</div>
+					</div>
+					<div class="inbox-content">
+						<div id="inboxEmpty" class="inbox-empty">
+							<p>请先生成一个邮箱地址</p>
+						</div>
+						<div id="inboxList" class="inbox-list" style="display: none;">
+							<!-- 邮件列表将在这里动态生成 -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 邮件详情模态框 -->
+	<div id="emailModal" class="modal" style="display: none;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 id="modalSubject">邮件详情</h3>
+				<button id="closeModal" class="close-btn">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="email-details">
+					<div class="email-meta">
+						<p><strong>发件人:</strong> <span id="modalFrom"></span></p>
+						<p><strong>收件人:</strong> <span id="modalTo"></span></p>
+						<p><strong>时间:</strong> <span id="modalTime"></span></p>
+						<p><strong>附件:</strong> <span id="modalAttachments"></span></p>
+					</div>
+					<div class="email-content">
+						<div id="modalContent"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// 设置预设邮箱
+		const presetEmail = '${email}';
+		window.addEventListener('DOMContentLoaded', function() {
+			// 等待页面加载完成后设置邮箱
+			setTimeout(() => {
+				if (typeof setupPresetEmail === 'function') {
+					setupPresetEmail(presetEmail);
+				}
+			}, 100);
+		});
+	</script>
+	<script src="/static/script.js"></script>
+</body>
+</html>`;
+		return c.html(html, 200, { "Content-Type": "text/html; charset=utf-8" });
+	}
+	
+	// 如果不是有效的邮箱地址，返回404
+	return c.text("Not Found", 404);
+});
+
 // 主页面路由
 staticRoutes.get("/", async (c) => {
 	return c.html(`
@@ -1318,15 +1664,33 @@ staticRoutes.get("/", async (c) => {
 								<option value="">选择域名...</option>
 							</select>
 						</div>
-						<input type="text" id="emailAddress" readonly placeholder="完整邮箱地址将显示在这里">
+						<div class="email-input-with-copy">
+							<input type="text" id="emailAddress" readonly placeholder="完整邮箱地址将显示在这里">
+							<button id="copyEmailBtn" class="copy-btn" title="复制邮箱地址">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+									<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+								</svg>
+							</button>
+						</div>
+						<div class="email-url-display">
+							<label for="emailUrl">访问地址:</label>
+							<div class="url-input-with-copy">
+								<input type="text" id="emailUrl" readonly placeholder="完整URL将显示在这里">
+								<button id="copyUrlBtn" class="copy-btn" title="复制URL">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+										<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+									</svg>
+								</button>
+							</div>
+						</div>
 						<div class="email-actions-row">
 							<button id="generateBtn" class="btn btn-primary">生成新邮箱</button>
-							<button id="randomPrefixBtn" class="btn btn-secondary">随机前缀</button>
 						</div>
 					</div>
 					<div class="email-actions">
-						<button id="copyBtn" class="btn btn-secondary" disabled>复制邮箱</button>
-						<button id="refreshBtn" class="btn btn-secondary" disabled>刷新收件箱</button>
+						<!-- 刷新按钮已移至右栏标题 -->
 					</div>
 					<div class="email-info">
 						<p>邮箱将在24小时后自动删除</p>
@@ -1339,7 +1703,13 @@ staticRoutes.get("/", async (c) => {
 			<div class="right-panel">
 				<div class="inbox">
 					<div class="inbox-header">
-						<h2>收件箱</h2>
+						<h2>收件箱 <button id="refreshBtn" class="refresh-icon-btn" title="刷新收件箱">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<polyline points="23 4 23 10 17 10"></polyline>
+								<polyline points="1 20 1 14 7 14"></polyline>
+								<path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+							</svg>
+						</button></h2>
 						<div class="inbox-controls">
 							<span id="emailCount" class="email-count">0 封邮件</span>
 							<span id="autoRefreshStatus" class="auto-refresh-status" style="display: none;">
