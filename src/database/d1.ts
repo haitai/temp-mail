@@ -42,7 +42,7 @@ export async function getEmailsByRecipient(
 	try {
 		const { results } = await db
 			.prepare(
-				`SELECT id, from_address, to_address, subject, received_at, has_attachments, attachment_count
+				`SELECT id, from_address, to_address, subject, received_at, has_attachments, attachment_count, text_content, html_content
          FROM emails
          WHERE to_address = ?
          ORDER BY received_at DESC

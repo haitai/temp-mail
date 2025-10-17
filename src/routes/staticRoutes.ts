@@ -2,6 +2,55 @@ import { Hono } from "hono";
 
 const staticRoutes = new Hono<{ Bindings: CloudflareBindings }>();
 
+// Favicon 路由
+staticRoutes.get("/favicon.svg", async (c) => {
+	const favicon = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<circle cx="16" cy="16" r="16" fill="#667eea"/>
+		<path d="M8 12L16 18L24 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+		<rect x="8" y="10" width="16" height="12" rx="2" stroke="white" stroke-width="2" fill="none"/>
+		<circle cx="20" cy="14" r="1.5" fill="white" opacity="0.8"/>
+	</svg>`;
+	return c.text(favicon, 200, { "Content-Type": "image/svg+xml; charset=utf-8" });
+});
+
+staticRoutes.get("/favicon-16.svg", async (c) => {
+	const favicon = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<circle cx="8" cy="8" r="8" fill="#667eea"/>
+		<path d="M4 6L8 9L12 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+		<rect x="4" y="5" width="8" height="6" rx="1" stroke="white" stroke-width="1.5" fill="none"/>
+		<circle cx="10" cy="7" r="0.8" fill="white" opacity="0.8"/>
+	</svg>`;
+	return c.text(favicon, 200, { "Content-Type": "image/svg+xml; charset=utf-8" });
+});
+
+staticRoutes.get("/favicon-48.svg", async (c) => {
+	const favicon = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<circle cx="24" cy="24" r="24" fill="#667eea"/>
+		<path d="M12 18L24 27L36 18" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+		<rect x="12" y="15" width="24" height="18" rx="3" stroke="white" stroke-width="3" fill="none"/>
+		<circle cx="30" cy="21" r="2" fill="white" opacity="0.8"/>
+		<path d="M18 24L24 28L30 24" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+	</svg>`;
+	return c.text(favicon, 200, { "Content-Type": "image/svg+xml; charset=utf-8" });
+});
+
+staticRoutes.get("/apple-touch-icon.svg", async (c) => {
+	const favicon = `<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<defs>
+			<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+				<stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+				<stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+			</linearGradient>
+		</defs>
+		<circle cx="90" cy="90" r="90" fill="url(#gradient)"/>
+		<path d="M45 67.5L90 101.25L135 67.5" stroke="white" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+		<rect x="45" y="56.25" width="90" height="67.5" rx="11" stroke="white" stroke-width="11" fill="none"/>
+		<circle cx="112.5" cy="78.75" r="7.5" fill="white" opacity="0.8"/>
+		<path d="M67.5 90L90 101.25L112.5 90" stroke="white" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+	</svg>`;
+	return c.text(favicon, 200, { "Content-Type": "image/svg+xml; charset=utf-8" });
+});
+
 // 静态文件服务 - 直接返回文件内容
 staticRoutes.get("/static/style.css", async (c) => {
 	const css = `
@@ -565,6 +614,7 @@ const closeModal = document.getElementById('closeModal');
 document.addEventListener('DOMContentLoaded', function() {
 	loadDomains();
 	setupEventListeners();
+	restoreEmailState();
 });
 
 // 设置事件监听器
@@ -679,6 +729,9 @@ function generateEmail() {
 	currentEmail = \`\${prefix}@\${domain}\`;
 	emailInput.value = currentEmail;
 	
+	// 保存邮箱状态到缓存
+	saveEmailState();
+	
 	// 启用相关按钮
 	copyBtn.disabled = false;
 	refreshBtn.disabled = false;
@@ -737,6 +790,8 @@ async function refreshInbox() {
 		
 		if (data.success) {
 			displayEmails(data.result);
+			// 缓存邮件数据
+			saveEmailData(data.result);
 		} else {
 			console.error('Failed to fetch emails:', data.error);
 			showNotification('获取邮件失败', 'error');
@@ -764,9 +819,17 @@ function displayEmails(emails) {
 	
 	const emailsHtml = emails.map(email => {
 		const time = formatTime(email.received_at);
-		const preview = email.text_content ? 
-			email.text_content.substring(0, 100) + '...' : 
-			'无文本内容';
+		
+		// 优先显示文本内容，如果没有则显示HTML内容（客户端会处理）
+		let preview = '';
+		if (email.text_content) {
+			preview = email.text_content.substring(0, 100) + '...';
+		} else if (email.html_content) {
+			// 简单地从HTML中提取文本（移除HTML标签）
+			preview = email.html_content.replace(/<[^>]*>/g, '').substring(0, 100) + '...';
+		} else {
+			preview = '无文本内容';
+		}
 		
 		return \`
 			<div class="email-item" onclick="showEmailDetail('\${email.id}')">
@@ -787,7 +850,7 @@ function displayEmails(emails) {
 // 显示邮件详情
 async function showEmailDetail(emailId) {
 	try {
-		const response = await fetch(\`/email/\${emailId}\`);
+		const response = await fetch(\`/inbox/\${emailId}\`);
 		const data = await response.json();
 		
 		if (data.success) {
@@ -803,13 +866,19 @@ async function showEmailDetail(emailId) {
 }
 
 // 显示邮件模态框
-function displayEmailModal(email) {
+async function displayEmailModal(email) {
 	document.getElementById('modalSubject').textContent = email.subject || '无主题';
 	document.getElementById('modalFrom').textContent = email.from_address;
 	document.getElementById('modalTo').textContent = email.to_address;
 	document.getElementById('modalTime').textContent = formatTime(email.received_at);
-	document.getElementById('modalAttachments').textContent = 
-		email.has_attachments ? \`\${email.attachment_count} 个附件\` : '无附件';
+	
+	// 显示附件信息
+	const attachmentsDiv = document.getElementById('modalAttachments');
+	if (email.has_attachments) {
+		attachmentsDiv.innerHTML = \`\${email.attachment_count} 个附件 <button onclick="loadAttachments('\${email.id}')" class="btn btn-secondary" style="margin-left: 10px; padding: 5px 10px; font-size: 0.8rem;">查看附件</button>\`;
+	} else {
+		attachmentsDiv.textContent = '无附件';
+	}
 	
 	// 显示邮件内容
 	const contentDiv = document.getElementById('modalContent');
@@ -847,6 +916,8 @@ async function clearInbox() {
 		const data = await response.json();
 		
 		if (data.success) {
+			// 清空缓存
+			clearEmailCache();
 			showNotification('收件箱已清空', 'success');
 			refreshInbox();
 		} else {
@@ -888,7 +959,24 @@ function stopAutoRefresh() {
 
 // 格式化时间
 function formatTime(timestamp) {
-	const date = new Date(timestamp);
+	// 处理不同的时间戳格式
+	let date;
+	if (typeof timestamp === 'string') {
+		// 如果是字符串，尝试解析
+		date = new Date(timestamp);
+	} else if (typeof timestamp === 'number') {
+		// 如果是数字，可能是秒或毫秒时间戳
+		// 如果小于 1e12，认为是秒时间戳，需要转换为毫秒
+		date = new Date(timestamp < 1e12 ? timestamp * 1000 : timestamp);
+	} else {
+		date = new Date(timestamp);
+	}
+	
+	// 检查日期是否有效
+	if (isNaN(date.getTime())) {
+		return '时间未知';
+	}
+	
 	const now = new Date();
 	const diff = now - date;
 	
@@ -914,6 +1002,98 @@ function escapeHtml(text) {
 	const div = document.createElement('div');
 	div.textContent = text;
 	return div.innerHTML;
+}
+
+// 从HTML中提取纯文本
+function extractTextFromHtml(html) {
+	const div = document.createElement('div');
+	div.innerHTML = html;
+	return div.textContent || div.innerText || '';
+}
+
+// 加载附件列表
+async function loadAttachments(emailId) {
+	try {
+		const response = await fetch(\`/inbox/\${emailId}/attachments\`);
+		const data = await response.json();
+		
+		if (data.success) {
+			displayAttachments(data.result);
+		} else {
+			showNotification('获取附件列表失败', 'error');
+		}
+	} catch (error) {
+		console.error('Error loading attachments:', error);
+		showNotification('网络错误，请稍后重试', 'error');
+	}
+}
+
+// 显示附件列表
+function displayAttachments(attachments) {
+	const attachmentsDiv = document.getElementById('modalAttachments');
+	
+	if (attachments.length === 0) {
+		attachmentsDiv.innerHTML = '无附件';
+		return;
+	}
+	
+	const attachmentsHtml = attachments.map(attachment => {
+		const size = formatFileSize(attachment.size);
+		return \`
+			<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; border: 1px solid #e1e5e9; border-radius: 4px; margin-bottom: 5px; background-color: #f8f9fa;">
+				<div>
+					<strong>\${escapeHtml(attachment.filename)}</strong>
+					<br>
+					<small style="color: #666;">\${size} • \${escapeHtml(attachment.content_type)}</small>
+				</div>
+				<button onclick="downloadAttachment('\${attachment.id}')" class="btn btn-primary" style="padding: 5px 10px; font-size: 0.8rem;">下载</button>
+			</div>
+		\`;
+	}).join('');
+	
+	attachmentsDiv.innerHTML = \`
+		<div>
+			<strong>\${attachments.length} 个附件</strong>
+			<div style="margin-top: 10px;">
+				\${attachmentsHtml}
+			</div>
+		</div>
+	\`;
+}
+
+// 下载附件
+async function downloadAttachment(attachmentId) {
+	try {
+		const response = await fetch(\`/attachments/\${attachmentId}\`);
+		
+		if (!response.ok) {
+			throw new Error('下载失败');
+		}
+		
+		const blob = await response.blob();
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = response.headers.get('Content-Disposition')?.split('filename=')[1] || 'attachment';
+		document.body.appendChild(a);
+		a.click();
+		window.URL.revokeObjectURL(url);
+		document.body.removeChild(a);
+		
+		showNotification('附件下载成功', 'success');
+	} catch (error) {
+		console.error('Error downloading attachment:', error);
+		showNotification('附件下载失败', 'error');
+	}
+}
+
+// 格式化文件大小
+function formatFileSize(bytes) {
+	if (bytes === 0) return '0 B';
+	const k = 1024;
+	const sizes = ['B', 'KB', 'MB', 'GB'];
+	const i = Math.floor(Math.log(bytes) / Math.log(k));
+	return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
 // 显示通知
@@ -959,6 +1139,129 @@ function showNotification(message, type = 'info') {
 	}, 3000);
 }
 
+// 缓存相关函数
+// 保存邮箱状态到localStorage
+function saveEmailState() {
+	if (!currentEmail) return;
+	
+	const emailState = {
+		email: currentEmail,
+		prefix: emailPrefixInput.value,
+		domain: emailDomainSelect.value,
+		timestamp: Date.now()
+	};
+	
+	try {
+		localStorage.setItem('tempMail_currentEmail', JSON.stringify(emailState));
+	} catch (error) {
+		console.warn('Failed to save email state:', error);
+	}
+}
+
+// 保存邮件数据到sessionStorage
+function saveEmailData(emails) {
+	if (!currentEmail || !emails) return;
+	
+	const emailData = {
+		email: currentEmail,
+		emails: emails,
+		timestamp: Date.now()
+	};
+	
+	try {
+		sessionStorage.setItem('tempMail_emailData', JSON.stringify(emailData));
+	} catch (error) {
+		console.warn('Failed to save email data:', error);
+	}
+}
+
+// 恢复邮箱状态
+function restoreEmailState() {
+	try {
+		const savedState = localStorage.getItem('tempMail_currentEmail');
+		if (!savedState) return;
+		
+		const emailState = JSON.parse(savedState);
+		
+		// 检查缓存是否过期（24小时）
+		const now = Date.now();
+		const cacheAge = now - emailState.timestamp;
+		const maxAge = 24 * 60 * 60 * 1000; // 24小时
+		
+		if (cacheAge > maxAge) {
+			localStorage.removeItem('tempMail_currentEmail');
+			return;
+		}
+		
+		// 恢复邮箱状态
+		currentEmail = emailState.email;
+		emailPrefixInput.value = emailState.prefix || '';
+		emailDomainSelect.value = emailState.domain || '';
+		emailInput.value = currentEmail;
+		
+		// 启用相关按钮
+		copyBtn.disabled = false;
+		refreshBtn.disabled = false;
+		clearBtn.disabled = false;
+		
+		// 显示收件箱
+		showInbox();
+		
+		// 尝试恢复缓存的邮件数据
+		restoreEmailData();
+		
+		// 开始自动刷新
+		startAutoRefresh();
+		
+		showNotification('已恢复之前的邮箱状态', 'info');
+		
+	} catch (error) {
+		console.warn('Failed to restore email state:', error);
+		localStorage.removeItem('tempMail_currentEmail');
+	}
+}
+
+// 恢复邮件数据
+function restoreEmailData() {
+	try {
+		const savedData = sessionStorage.getItem('tempMail_emailData');
+		if (!savedData) return;
+		
+		const emailData = JSON.parse(savedData);
+		
+		// 检查是否是当前邮箱的数据
+		if (emailData.email !== currentEmail) return;
+		
+		// 检查缓存是否过期（1小时）
+		const now = Date.now();
+		const cacheAge = now - emailData.timestamp;
+		const maxAge = 60 * 60 * 1000; // 1小时
+		
+		if (cacheAge > maxAge) {
+			sessionStorage.removeItem('tempMail_emailData');
+			return;
+		}
+		
+		// 恢复邮件数据
+		displayEmails(emailData.emails);
+		showNotification('已恢复缓存的邮件数据', 'info');
+		
+	} catch (error) {
+		console.warn('Failed to restore email data:', error);
+		sessionStorage.removeItem('tempMail_emailData');
+	}
+}
+
+// 清空缓存
+function clearEmailCache() {
+	try {
+		localStorage.removeItem('tempMail_currentEmail');
+		sessionStorage.removeItem('tempMail_emailData');
+	} catch (error) {
+		console.warn('Failed to clear email cache:', error);
+	}
+}
+
 // 页面卸载时清理
 window.addEventListener('beforeunload', function() {
 	stopAutoRefresh();
@@ -975,12 +1278,17 @@ staticRoutes.get("/", async (c) => {
 	return c.html(`
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>临时邮箱服务</title>
-	<link rel="stylesheet" href="/static/style.css">
-</head>
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>临时邮箱服务</title>
+			<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+			<link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon-16.svg">
+			<link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon.svg">
+			<link rel="icon" type="image/svg+xml" sizes="48x48" href="/favicon-48.svg">
+			<link rel="apple-touch-icon" href="/apple-touch-icon.svg">
+			<link rel="stylesheet" href="/static/style.css">
+		</head>
 <body>
 	<div class="container">
 		<header class="header">

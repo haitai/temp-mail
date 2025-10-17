@@ -2,52 +2,24 @@
 
 export const DOMAINS = [
 	{
-		owner: "vwh",
-		domain: "barid.site",
-	},
-	{
-		owner: "vwh",
-		domain: "vwh.sh",
-	},
-	{
-		owner: "vwh",
-		domain: "iusearch.lol",
-	},
-	{
-		owner: "mm6x",
-		domain: "lifetalk.us",
-	},
-	{
-		owner: "z44d",
-		domain: "z44d.pro",
-	},
-	{
-		owner: "blockton",
-		domain: "wael.fun",
-	},
-	{
-		owner: "HprideH",
-		domain: "tawbah.site",
-	},
-	{
-		owner: "HprideH",
-		domain: "kuruptd.ink",
-	},
-	{
-		owner: "oxno1",
-		domain: "oxno1.space",
+		owner: "None",
+		domain: "auko.pp.ua",
 	},
 	{
 		owner: "None",
-		domain: "hacktivc.com",
+		domain: "haitai.pp.ua",
 	},
 	{
 		owner: "None",
-		domain: "lealaom.xyz",
+		domain: "haitai.qzz.io",
 	},
 	{
 		owner: "None",
-		domain: "leala.site",
+		domain: "t4i.dpdns.org",
+	},
+	{
+		owner: "None",
+		domain: "haitai.dpdns.org",
 	},
 ] satisfies {
 	owner: string;

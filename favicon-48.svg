@@ -1,0 +1,14 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="24" cy="24" r="24" fill="#667eea"/>
+  
+  <!-- 邮件图标 -->
+  <path d="M12 18L24 27L36 18" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="12" y="15" width="24" height="18" rx="3" stroke="white" stroke-width="3" fill="none"/>
+  
+  <!-- 装饰性小点 -->
+  <circle cx="30" cy="21" r="2" fill="white" opacity="0.8"/>
+  
+  <!-- 额外的装饰线条 -->
+  <path d="M18 24L24 28L30 24" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+</svg>

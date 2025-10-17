@@ -1,0 +1,11 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="8" cy="8" r="8" fill="#667eea"/>
+  
+  <!-- 邮件图标 -->
+  <path d="M4 6L8 9L12 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="4" y="5" width="8" height="6" rx="1" stroke="white" stroke-width="1.5" fill="none"/>
+  
+  <!-- 装饰性小点 -->
+  <circle cx="10" cy="7" r="0.8" fill="white" opacity="0.8"/>
+</svg>
