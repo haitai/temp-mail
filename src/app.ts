@@ -1,6 +1,7 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import attachmentRoutes from "@/routes/attachmentRoutes";
 import emailRoutes from "@/routes/emailRoutes";
+import staticRoutes from "@/routes/staticRoutes";
 import { setupDocumentation } from "@/utils/docs";
 import { logError } from "@/utils/logger";
 import corsMiddleware from "./middlewares/cors";
@@ -19,6 +20,8 @@ app.onError((err, c) => {
 });
 
 // --- Routes ---
+// Static Routes (must be first to handle root path)
+app.route("/", staticRoutes);
 // Email Routes
 app.route("/", emailRoutes);
 // Attachment Routes
