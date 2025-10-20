@@ -1490,7 +1490,7 @@ staticRoutes.get("/:email", async (c) => {
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>临时邮箱服务</title>
+		<title>临时邮箱</title>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 		<link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon-16.svg">
 		<link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon.svg">
@@ -1501,7 +1501,7 @@ staticRoutes.get("/:email", async (c) => {
 <body>
 	<div class="container">
 		<header class="header">
-			<h1>临时邮箱服务</h1>
+			<h1>临时邮箱</h1>
 		</header>
 
 		<div class="main-content">
@@ -1637,7 +1637,7 @@ staticRoutes.get("/", async (c) => {
 		<head>
 			<meta charset="UTF-8">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<title>临时邮箱服务</title>
+			<title>临时邮箱</title>
 			<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 			<link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon-16.svg">
 			<link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon.svg">
@@ -1648,7 +1648,7 @@ staticRoutes.get("/", async (c) => {
 <body>
 	<div class="container">
 		<header class="header">
-			<h1>临时邮箱服务</h1>
+			<h1>临时邮箱</h1>
 		</header>
 
 		<div class="main-content">
