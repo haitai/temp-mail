@@ -191,6 +191,7 @@ body {
 	font-size: 1rem;
 	outline: none;
 	color: var(--text-primary);
+	width: 50%;
 }
 
 .email-separator {
@@ -934,7 +935,7 @@ async function loadDomains() {
 
 // 填充域名下拉选择框
 function populateDomainSelect() {
-	emailDomainSelect.innerHTML = '<option value="">选择或随机域名...</option>';
+	emailDomainSelect.innerHTML = '<option value="">选择域名...</option>';
 	domains.forEach(domain => {
 		const option = document.createElement('option');
 		option.value = domain;
@@ -1623,10 +1624,10 @@ staticRoutes.get("/:email", async (c) => {
 					<h2>生成临时邮箱</h2>
 					<div class="email-display">
 						<div class="email-input-group">
-							<input type="text" id="emailPrefix" placeholder="自定义或随机前缀">
+							<input type="text" id="emailPrefix" placeholder="自定义前缀">
 							<span class="email-separator">@</span>
 							<select id="emailDomain" class="domain-select">
-								<option value="">选择或随机域名...</option>
+								<option value="">选择域名...</option>
 							</select>
 						</div>
 						<div class="email-input-with-copy">
@@ -1775,10 +1776,10 @@ staticRoutes.get("/", async (c) => {
 					<h2>生成临时邮箱</h2>
 					<div class="email-display">
 						<div class="email-input-group">
-							<input type="text" id="emailPrefix" placeholder="自定义或随机前缀">
+							<input type="text" id="emailPrefix" placeholder="自定义前缀">
 							<span class="email-separator">@</span>
 							<select id="emailDomain" class="domain-select">
-								<option value="">选择或随机域名...</option>
+								<option value="">选择域名...</option>
 							</select>
 						</div>
 						<div class="email-input-with-copy">

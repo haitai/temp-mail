@@ -14,14 +14,14 @@
 		{
 			"binding": "D1",
 			"database_name": "temp-mail-d1",
-			"database_id": "7a8d8ce6-df0e-4c56-8a7a-e3f5895a4771" // Replace with the ID from `bun run db:create`
+			"database_id": "8ec03e30-0ef6-443d-81aa-67cad2b8ad8b" // Replace with the ID from `bun run db:create`
 		}
 	],
 	"kv_namespaces": [
 		{
 			"binding": "KV",
-			"id": "73f6b6ffe8e94b5db08ed815d92b44e6", // Replace with the ID from `bun run kv:create`
-			"preview_id": "73f6b6ffe8e94b5db08ed815d92b44e6" // Replace with the ID from `bun run kv:create`
+			"id": "3867633a1a3e4e06b015158d9ed1a1df", // Replace with the ID from `bun run kv:create`
+			"preview_id": "3867633a1a3e4e06b015158d9ed1a1df" // Replace with the ID from `bun run kv:create`
 		}
 	],
 	"r2_buckets": [
