@@ -6,6 +6,7 @@ import { updateSenderStats } from "@/database/kv";
 import * as r2 from "@/database/r2";
 import { emailSchema } from "@/schemas/emails";
 import { now } from "@/utils/helpers";
+import { logDebug, logError, logInfo } from "@/utils/logger";
 import { processEmailContent } from "@/utils/mail";
 import { PerformanceTimer } from "@/utils/performance";
 
@@ -85,7 +86,22 @@ export async function handleEmail(
 	try {
 		const timer = new PerformanceTimer("email-processing");
 		const emailId = createId();
+
+		logDebug("Email processing started", {
+			emailId,
+			from: message.from,
+			to: message.to,
+		});
+
 		const email = await PostalMime.parse(message.raw);
+
+		logDebug("Email parsed successfully", {
+			emailId,
+			subject: email.subject,
+			hasHtml: !!email.html,
+			hasText: !!email.text,
+			attachmentCount: email.attachments?.length || 0,
+		});
 
 		// Process email content
 		const { htmlContent, textContent } = processEmailContent(
@@ -120,17 +136,32 @@ export async function handleEmail(
 		const { success, error } = await db.insertEmail(env.D1, emailData);
 
 		if (!success) {
+			logError(`Failed to insert email ${emailId}`, new Error(error || "Unknown error"));
 			throw new Error(`Failed to insert email: ${error}`);
 		}
 
+		logInfo("Email stored successfully", {
+			emailId,
+			from: message.from,
+			to: message.to,
+			hasAttachments: validAttachments.length > 0,
+		});
+
 		// Process and store attachments
 		if (validAttachments.length > 0) {
+			logDebug("Processing attachments", {
+				emailId,
+				attachmentCount: validAttachments.length,
+			});
 			ctx.waitUntil(processAttachments(env, emailId, validAttachments as EmailAttachment[]));
 		}
 
 		timer.end(); // Log processing time
 	} catch (error) {
-		console.error("Failed to process email:", error);
+		logError("Failed to process email", error instanceof Error ? error : new Error(String(error)), {
+			from: message.from,
+			to: message.to,
+		});
 		throw error;
 	}
 }

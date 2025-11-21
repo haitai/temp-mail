@@ -32,26 +32,29 @@
 		}
 	],
 	"triggers": {
-		"crons": ["0 */4 * * *", "0 */5 * * *"]
+		"crons": [
+			"0 */4 * * *",
+			"0 */5 * * *"
+		]
 	},
 	"vars": {
 		"TELEGRAM_LOG_ENABLE": true,
-		"HOURS_TO_DELETE_D1": 3
+		"HOURS_TO_DELETE_D1": 24
 	},
 	// "assets": { "directory": "./public/" },
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
 	 */
-	"placement": { "mode": "smart" },
-
+	"placement": {
+		"mode": "smart"
+	},
 	/**
 	 * Bindings
 	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
 	 * databases, object storage, AI inference, real-time communication and more.
 	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
 	 */
-
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
@@ -61,7 +64,6 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-
 	/**
 	 * Static Assets
 	 * https://developers.cloudflare.com/workers/static-assets/binding/

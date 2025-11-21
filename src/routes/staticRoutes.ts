@@ -5,7 +5,7 @@ const staticRoutes = new Hono<{ Bindings: CloudflareBindings }>();
 // Favicon 路由
 staticRoutes.get("/favicon.svg", async (c) => {
 	const favicon = `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<circle cx="16" cy="16" r="16" fill="#667eea"/>
+		<circle cx="16" cy="16" r="16" fill="#4A5568"/>
 		<path d="M8 12L16 18L24 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 		<rect x="8" y="10" width="16" height="12" rx="2" stroke="white" stroke-width="2" fill="none"/>
 		<circle cx="20" cy="14" r="1.5" fill="white" opacity="0.8"/>
@@ -15,7 +15,7 @@ staticRoutes.get("/favicon.svg", async (c) => {
 
 staticRoutes.get("/favicon-16.svg", async (c) => {
 	const favicon = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<circle cx="8" cy="8" r="8" fill="#667eea"/>
+		<circle cx="8" cy="8" r="8" fill="#4A5568"/>
 		<path d="M4 6L8 9L12 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 		<rect x="4" y="5" width="8" height="6" rx="1" stroke="white" stroke-width="1.5" fill="none"/>
 		<circle cx="10" cy="7" r="0.8" fill="white" opacity="0.8"/>
@@ -25,7 +25,7 @@ staticRoutes.get("/favicon-16.svg", async (c) => {
 
 staticRoutes.get("/favicon-48.svg", async (c) => {
 	const favicon = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-		<circle cx="24" cy="24" r="24" fill="#667eea"/>
+		<circle cx="24" cy="24" r="24" fill="#4A5568"/>
 		<path d="M12 18L24 27L36 18" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 		<rect x="12" y="15" width="24" height="18" rx="3" stroke="white" stroke-width="3" fill="none"/>
 		<circle cx="30" cy="21" r="2" fill="white" opacity="0.8"/>
@@ -38,8 +38,8 @@ staticRoutes.get("/apple-touch-icon.svg", async (c) => {
 	const favicon = `<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
 		<defs>
 			<linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-				<stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-				<stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+				<stop offset="0%" style="stop-color:#2D3748;stop-opacity:1" />
+				<stop offset="100%" style="stop-color:#4A5568;stop-opacity:1" />
 			</linearGradient>
 		</defs>
 		<circle cx="90" cy="90" r="90" fill="url(#gradient)"/>
@@ -54,6 +54,49 @@ staticRoutes.get("/apple-touch-icon.svg", async (c) => {
 // 静态文件服务 - 直接返回文件内容
 staticRoutes.get("/static/style.css", async (c) => {
 	const css = `
+/* CSS 变量 - 主题系统 */
+:root {
+	/* 浅色主题 */
+	--bg-primary: #f5f5f5;
+	--bg-secondary: #ffffff;
+	--bg-tertiary: #f8f9fa;
+	--bg-hover: #e9ecef;
+	--text-primary: #333;
+	--text-secondary: #666;
+	--text-tertiary: #999;
+	--border-color: #e1e5e9;
+	--border-hover: #718096;
+	--shadow-sm: rgba(0, 0, 0, 0.1);
+	--shadow-md: rgba(0, 0, 0, 0.15);
+	--shadow-lg: rgba(0, 0, 0, 0.3);
+	--modal-overlay: rgba(0, 0, 0, 0.5);
+	--input-bg: #f8f9fa;
+	--scrollbar-track: #f1f1f1;
+	--scrollbar-thumb: #c1c1c1;
+	--scrollbar-thumb-hover: #a8a8a8;
+}
+
+[data-theme="dark"] {
+	/* 深色主题 */
+	--bg-primary: #1a1a1a;
+	--bg-secondary: #2d2d2d;
+	--bg-tertiary: #3a3a3a;
+	--bg-hover: #404040;
+	--text-primary: #e0e0e0;
+	--text-secondary: #b0b0b0;
+	--text-tertiary: #808080;
+	--border-color: #404040;
+	--border-hover: #718096;
+	--shadow-sm: rgba(0, 0, 0, 0.3);
+	--shadow-md: rgba(0, 0, 0, 0.4);
+	--shadow-lg: rgba(0, 0, 0, 0.6);
+	--modal-overlay: rgba(0, 0, 0, 0.7);
+	--input-bg: #3a3a3a;
+	--scrollbar-track: #2d2d2d;
+	--scrollbar-thumb: #555;
+	--scrollbar-thumb-hover: #666;
+}
+
 /* 基础样式重置 */
 * {
 	margin: 0;
@@ -64,8 +107,9 @@ staticRoutes.get("/static/style.css", async (c) => {
 body {
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	line-height: 1.6;
-	color: #333;
-	background-color: #f5f5f5;
+	color: var(--text-primary);
+	background-color: var(--bg-primary);
+	transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -79,7 +123,7 @@ body {
 	text-align: center;
 	margin-bottom: 30px;
 	padding: 20px;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
 	color: white;
 	border-radius: 10px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -106,16 +150,17 @@ body {
 
 /* 左侧面板 */
 .left-panel {
-	background: white;
+	background: var(--bg-secondary);
 	border-radius: 10px;
 	padding: 30px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 10px var(--shadow-sm);
 	height: fit-content;
+	transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .email-generator h2 {
 	margin-bottom: 20px;
-	color: #333;
+	color: var(--text-primary);
 	font-size: 1.5rem;
 }
 
@@ -129,13 +174,14 @@ body {
 	gap: 8px;
 	margin-bottom: 10px;
 	padding: 12px;
-	border: 2px solid #e1e5e9;
+	border: 2px solid var(--border-color);
 	border-radius: 6px;
-	background-color: #f8f9fa;
+	background-color: var(--input-bg);
+	transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .email-input-group:focus-within {
-	border-color: #667eea;
+	border-color: var(--border-hover);
 }
 
 .email-input-group input {
@@ -144,11 +190,12 @@ body {
 	background: transparent;
 	font-size: 1rem;
 	outline: none;
+	color: var(--text-primary);
 }
 
 .email-separator {
 	font-weight: 600;
-	color: #667eea;
+	color: #718096;
 	font-size: 1.1rem;
 }
 
@@ -158,23 +205,25 @@ body {
 	background: transparent;
 	font-size: 1rem;
 	outline: none;
-	color: #333;
+	color: var(--text-primary);
 	cursor: pointer;
 }
 
 .email-display input[readonly] {
 	width: 100%;
 	padding: 12px;
-	border: 2px solid #e1e5e9;
+	border: 2px solid var(--border-color);
 	border-radius: 6px;
 	font-size: 1rem;
 	margin-bottom: 10px;
-	background-color: #f8f9fa;
+	background-color: var(--input-bg);
+	color: var(--text-primary);
+	transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .email-display input[readonly]:focus {
 	outline: none;
-	border-color: #667eea;
+	border-color: var(--border-hover);
 }
 
 .email-input-with-copy {
@@ -198,7 +247,7 @@ body {
 	cursor: pointer;
 	padding: 4px;
 	border-radius: 4px;
-	color: #666;
+	color: var(--text-secondary);
 	transition: all 0.2s ease;
 	display: flex;
 	align-items: center;
@@ -206,12 +255,12 @@ body {
 }
 
 .copy-btn:hover {
-	background-color: #f0f0f0;
-	color: #333;
+	background-color: var(--bg-hover);
+	color: var(--text-primary);
 }
 
 .copy-btn:active {
-	background-color: #e0e0e0;
+	background-color: var(--bg-tertiary);
 }
 
 .email-url-display {
@@ -222,7 +271,7 @@ body {
 	display: block;
 	margin-bottom: 5px;
 	font-weight: 500;
-	color: #333;
+	color: var(--text-primary);
 }
 
 .url-input-with-copy {
@@ -234,11 +283,12 @@ body {
 .url-input-with-copy input {
 	width: 100%;
 	padding: 8px 40px 8px 12px;
-	border: 1px solid #ddd;
+	border: 1px solid var(--border-color);
 	border-radius: 4px;
 	font-size: 14px;
-	background-color: #f8f9fa;
-	color: #666;
+	background-color: var(--input-bg);
+	color: var(--text-secondary);
+	transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .email-actions-row {
@@ -254,26 +304,28 @@ body {
 }
 
 .email-info {
-	background-color: #f8f9fa;
+	background-color: var(--bg-tertiary);
 	padding: 15px;
 	border-radius: 6px;
-	border-left: 4px solid #667eea;
+	border-left: 4px solid #718096;
+	transition: background-color 0.3s ease;
 }
 
 .email-info p {
 	margin-bottom: 5px;
 	font-size: 0.9rem;
-	color: #666;
+	color: var(--text-secondary);
 }
 
 /* 右侧面板 */
 .right-panel {
-	background: white;
+	background: var(--bg-secondary);
 	border-radius: 10px;
 	padding: 30px;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 10px var(--shadow-sm);
 	display: flex;
 	flex-direction: column;
+	transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .inbox-header {
@@ -282,11 +334,12 @@ body {
 	align-items: center;
 	margin-bottom: 20px;
 	padding-bottom: 15px;
-	border-bottom: 2px solid #e1e5e9;
+	border-bottom: 2px solid var(--border-color);
+	transition: border-color 0.3s ease;
 }
 
 .inbox-header h2 {
-	color: #333;
+	color: var(--text-primary);
 	font-size: 1.5rem;
 }
 
@@ -297,7 +350,7 @@ body {
 }
 
 .email-count {
-	background-color: #667eea;
+	background-color: #718096;
 	color: white;
 	padding: 5px 12px;
 	border-radius: 20px;
@@ -339,7 +392,7 @@ body {
 .inbox-empty {
 	text-align: center;
 	padding: 60px 20px;
-	color: #666;
+	color: var(--text-secondary);
 }
 
 .inbox-empty p {
@@ -354,8 +407,8 @@ body {
 }
 
 .email-item {
-	background-color: #f8f9fa;
-	border: 1px solid #e1e5e9;
+	background-color: var(--bg-tertiary);
+	border: 1px solid var(--border-color);
 	border-radius: 8px;
 	padding: 15px;
 	cursor: pointer;
@@ -363,10 +416,10 @@ body {
 }
 
 .email-item:hover {
-	background-color: #e9ecef;
-	border-color: #667eea;
+	background-color: var(--bg-hover);
+	border-color: var(--border-hover);
 	transform: translateY(-1px);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 8px var(--shadow-sm);
 }
 
 .email-item.unread {
@@ -383,24 +436,24 @@ body {
 
 .email-subject {
 	font-weight: 600;
-	color: #333;
+	color: var(--text-primary);
 	font-size: 1rem;
 }
 
 .email-time {
 	font-size: 0.8rem;
-	color: #666;
+	color: var(--text-secondary);
 	white-space: nowrap;
 }
 
 .email-from {
-	color: #667eea;
+	color: #718096;
 	font-size: 0.9rem;
 	margin-bottom: 5px;
 }
 
 .email-preview {
-	color: #666;
+	color: var(--text-secondary);
 	font-size: 0.9rem;
 	line-height: 1.4;
 	display: -webkit-box;
@@ -443,12 +496,12 @@ body {
 }
 
 .btn-primary {
-	background-color: #667eea;
+	background-color: #4A5568;
 	color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-	background-color: #5a6fd8;
+	background-color: #2D3748;
 	transform: translateY(-1px);
 }
 
@@ -482,21 +535,23 @@ body {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: var(--modal-overlay);
 	z-index: 1000;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	transition: background-color 0.3s ease;
 }
 
 .modal-content {
-	background: white;
+	background: var(--bg-secondary);
 	border-radius: 10px;
 	width: 90%;
 	max-width: 800px;
 	max-height: 90vh;
 	overflow: hidden;
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 10px 30px var(--shadow-lg);
+	transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .modal-header {
@@ -504,13 +559,14 @@ body {
 	justify-content: space-between;
 	align-items: center;
 	padding: 20px;
-	background-color: #f8f9fa;
-	border-bottom: 1px solid #e1e5e9;
+	background-color: var(--bg-tertiary);
+	border-bottom: 1px solid var(--border-color);
+	transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .modal-header h3 {
 	margin: 0;
-	color: #333;
+	color: var(--text-primary);
 }
 
 .close-btn {
@@ -518,17 +574,18 @@ body {
 	border: none;
 	font-size: 1.5rem;
 	cursor: pointer;
-	color: #666;
+	color: var(--text-secondary);
 	padding: 0;
 	width: 30px;
 	height: 30px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	transition: color 0.2s ease;
 }
 
 .close-btn:hover {
-	color: #333;
+	color: var(--text-primary);
 }
 
 .modal-body {
@@ -544,9 +601,10 @@ body {
 }
 
 .email-meta {
-	background-color: #f8f9fa;
+	background-color: var(--bg-tertiary);
 	padding: 15px;
 	border-radius: 6px;
+	transition: background-color 0.3s ease;
 }
 
 .email-meta p {
@@ -554,10 +612,11 @@ body {
 }
 
 .email-content {
-	border: 1px solid #e1e5e9;
+	border: 1px solid var(--border-color);
 	border-radius: 6px;
 	padding: 20px;
-	background-color: white;
+	background-color: var(--bg-secondary);
+	transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* 刷新图标按钮样式 */
@@ -642,15 +701,6 @@ body {
 		flex-direction: column;
 	}
 	
-	.email-input-group {
-		flex-direction: column;
-		gap: 5px;
-	}
-	
-	.email-separator {
-		display: none;
-	}
-	
 	.inbox-controls {
 		flex-direction: column;
 		gap: 10px;
@@ -669,7 +719,7 @@ body {
 	width: 20px;
 	height: 20px;
 	border: 3px solid #f3f3f3;
-	border-top: 3px solid #667eea;
+	border-top: 3px solid #718096;
 	border-radius: 50%;
 	animation: spin 1s linear infinite;
 }
@@ -687,22 +737,51 @@ body {
 
 .inbox-content::-webkit-scrollbar-track,
 .modal-body::-webkit-scrollbar-track {
-	background: #f1f1f1;
+	background: var(--scrollbar-track);
 	border-radius: 3px;
 }
 
 .inbox-content::-webkit-scrollbar-thumb,
 .modal-body::-webkit-scrollbar-thumb {
-	background: #c1c1c1;
+	background: var(--scrollbar-thumb);
 	border-radius: 3px;
 }
 
 .inbox-content::-webkit-scrollbar-thumb:hover,
 .modal-body::-webkit-scrollbar-thumb:hover {
-	background: #a8a8a8;
+	background: var(--scrollbar-thumb-hover);
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	background: var(--bg-secondary);
+	border: 2px solid var(--border-color);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 4px 12px var(--shadow-md);
+	transition: all 0.3s ease;
+	z-index: 999;
+	font-size: 24px;
+}
+
+.theme-toggle:hover {
+	transform: scale(1.1);
+	box-shadow: 0 6px 16px var(--shadow-md);
+}
+
+.theme-toggle:active {
+	transform: scale(0.95);
 }
 	`;
-	
+
 	return c.text(css, 200, {
 		"Content-Type": "text/css; charset=utf-8"
 	});
@@ -714,6 +793,29 @@ staticRoutes.get("/static/script.js", async (c) => {
 let currentEmail = '';
 let refreshInterval = null;
 let domains = [];
+
+// 主题管理
+function initTheme() {
+	const savedTheme = localStorage.getItem('theme') || 'light';
+	document.documentElement.setAttribute('data-theme', savedTheme);
+	updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+	const currentTheme = document.documentElement.getAttribute('data-theme');
+	const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+	document.documentElement.setAttribute('data-theme', newTheme);
+	localStorage.setItem('theme', newTheme);
+	updateThemeIcon(newTheme);
+}
+
+function updateThemeIcon(theme) {
+	const themeToggle = document.getElementById('themeToggle');
+	if (themeToggle) {
+		themeToggle.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+		themeToggle.setAttribute('aria-label', theme === 'dark' ? '切换到浅色模式' : '切换到深色模式');
+	}
+}
 
 // DOM 元素
 const emailPrefixInput = document.getElementById('emailPrefix');
@@ -734,11 +836,13 @@ const closeModal = document.getElementById('closeModal');
 
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
+	initTheme(); // 初始化主题
 	loadDomains().then(() => {
 		// 域名加载完成后再恢复邮箱状态
 		restoreEmailState();
 	});
 	setupEventListeners();
+	setupThemeToggle(); // 设置主题切换事件
 });
 
 // 设置预设邮箱
@@ -794,10 +898,18 @@ function setupEventListeners() {
 	
 	// ESC键关闭模态框
 	document.addEventListener('keydown', function(e) {
-		if (e.key === 'Escape' && emailModal.style.display !== 'none') {
+		if (e.key === 'Escape' \u0026\u0026 emailModal.style.display !== 'none') {
 			closeEmailModal();
 		}
 	});
+}
+
+// 设置主题切换事件
+function setupThemeToggle() {
+	const themeToggle = document.getElementById('themeToggle');
+	if (themeToggle) {
+		themeToggle.addEventListener('click', toggleTheme);
+	}
 }
 
 // 加载支持的域名
@@ -822,7 +934,7 @@ async function loadDomains() {
 
 // 填充域名下拉选择框
 function populateDomainSelect() {
-	emailDomainSelect.innerHTML = '<option value="">选择域名...</option>';
+	emailDomainSelect.innerHTML = '<option value="">选择或随机域名...</option>';
 	domains.forEach(domain => {
 		const option = document.createElement('option');
 		option.value = domain;
@@ -1463,7 +1575,7 @@ window.addEventListener('beforeunload', function() {
 	stopAutoRefresh();
 });
 	`;
-	
+
 	return c.text(js, 200, {
 		"Content-Type": "application/javascript; charset=utf-8"
 	});
@@ -1472,14 +1584,14 @@ window.addEventListener('beforeunload', function() {
 // 邮箱地址重定向路由 - 处理 /<email> 格式的URL
 staticRoutes.get("/:email", async (c) => {
 	const email = c.req.param("email");
-	
+
 	// 排除API路由和静态资源
-	if (email === 'domains' || email === 'emails' || email === 'attachments' || 
+	if (email === 'domains' || email === 'emails' || email === 'attachments' ||
 		email === 'health' || email === 'openapi.json' || email === 'docs' ||
 		email.startsWith('static/') || email.endsWith('.svg') || email.endsWith('.ico')) {
 		return c.text('Not Found', 404);
 	}
-	
+
 	// 验证邮箱地址格式
 	const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 	if (emailRegex.test(email)) {
@@ -1511,10 +1623,10 @@ staticRoutes.get("/:email", async (c) => {
 					<h2>生成临时邮箱</h2>
 					<div class="email-display">
 						<div class="email-input-group">
-							<input type="text" id="emailPrefix" placeholder="自定义前缀">
+							<input type="text" id="emailPrefix" placeholder="自定义或随机前缀">
 							<span class="email-separator">@</span>
 							<select id="emailDomain" class="domain-select">
-								<option value="">选择域名...</option>
+								<option value="">选择或随机域名...</option>
 							</select>
 						</div>
 						<div class="email-input-with-copy">
@@ -1607,6 +1719,11 @@ staticRoutes.get("/:email", async (c) => {
 		</div>
 	</div>
 
+	<!-- 主题切换按钮 -->
+	<button id="themeToggle" class="theme-toggle" aria-label="切换主题">
+		🌙
+	</button>
+
 	<script>
 		// 设置预设邮箱
 		const presetEmail = '${email}';
@@ -1624,7 +1741,7 @@ staticRoutes.get("/:email", async (c) => {
 </html>`;
 		return c.html(html, 200, { "Content-Type": "text/html; charset=utf-8" });
 	}
-	
+
 	// 如果不是有效的邮箱地址，返回404
 	return c.text("Not Found", 404);
 });
@@ -1658,10 +1775,10 @@ staticRoutes.get("/", async (c) => {
 					<h2>生成临时邮箱</h2>
 					<div class="email-display">
 						<div class="email-input-group">
-							<input type="text" id="emailPrefix" placeholder="自定义前缀">
+							<input type="text" id="emailPrefix" placeholder="自定义或随机前缀">
 							<span class="email-separator">@</span>
 							<select id="emailDomain" class="domain-select">
-								<option value="">选择域名...</option>
+								<option value="">选择或随机域名...</option>
 							</select>
 						</div>
 						<div class="email-input-with-copy">
@@ -1753,6 +1870,11 @@ staticRoutes.get("/", async (c) => {
 			</div>
 		</div>
 	</div>
+
+	<!-- 主题切换按钮 -->
+	<button id="themeToggle" class="theme-toggle" aria-label="切换主题">
+		🌙
+	</button>
 
 	<script src="/static/script.js"></script>
 </body>
