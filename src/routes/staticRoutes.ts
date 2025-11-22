@@ -209,7 +209,9 @@ body {
 	color: var(--text-primary);
 	cursor: pointer;
 }
-
+.domain-select option {
+	background-color: var(--bg-secondary);
+}
 .email-display input[readonly] {
 	width: 100%;
 	padding: 12px;
