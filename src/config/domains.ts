@@ -3,11 +3,11 @@
 export const DOMAINS = [
 	{
 		owner: "None",
-		domain: "auko.pp.ua",
+		domain: "haitai.pp.ua",
 	},
 	{
 		owner: "None",
-		domain: "haitai.pp.ua",
+		domain: "haitai.ggff.net",
 	},
 	{
 		owner: "None",
@@ -15,7 +15,7 @@ export const DOMAINS = [
 	},
 	{
 		owner: "None",
-		domain: "t4i.dpdns.org",
+		domain: "haitai.de5.net",
 	},
 	{
 		owner: "None",
