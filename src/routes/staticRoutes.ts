@@ -123,8 +123,7 @@ body {
 	text-align: center;
 	margin-bottom: 30px;
 	padding: 20px;
-	background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%);
-	color: white;
+	background: var(--bg-secondary);
 	border-radius: 10px;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
