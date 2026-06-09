@@ -1,7 +1,7 @@
 import app from "@/app";
 
 import { handleEmail } from "@/handlers/emailHandler";
-import { handleDailyReport, handleScheduled } from "@/handlers/scheduledHandler";
+import { handleScheduled } from "@/handlers/scheduledHandler";
 
 export default {
 	// Hono ( Cloudflare Worker )
@@ -13,10 +13,8 @@ export default {
 	// Cloudflare Scheduled Functions
 	scheduled: (event: ScheduledEvent, env: CloudflareBindings, ctx: ExecutionContext) => {
 		switch (event.cron) {
-			case "0 */4 * * *":
+			case "0 */2 * * *":
 				return handleScheduled(event, env, ctx);
-			case "0 */5 * * *":
-				return handleDailyReport(event, env, ctx);
 		}
 	},
 };
