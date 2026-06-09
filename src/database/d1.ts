@@ -88,6 +88,45 @@ export async function getEmailById(db: D1Database, emailId: string) {
 }
 
 /**
+ * Get attachments for emails older than a specific timestamp (for cascade cleanup)
+ */
+export async function getOldAttachments(db: D1Database, timestamp: number) {
+	try {
+		const { results } = await db
+			.prepare(
+				`SELECT a.id, a.email_id, a.r2_key
+         FROM attachments a
+         INNER JOIN emails e ON a.email_id = e.id
+         WHERE e.received_at < ?`,
+			)
+			.bind(timestamp)
+			.all();
+		return { results: results as { id: string; email_id: string; r2_key: string }[], error: undefined };
+	} catch (e: unknown) {
+		const error = e instanceof Error ? e : new Error(String(e));
+		return { results: [], error };
+	}
+}
+
+/**
+ * Delete attachments for emails older than a specific timestamp
+ */
+export async function deleteOldAttachments(db: D1Database, timestamp: number) {
+	try {
+		const { success, error, meta } = await db
+			.prepare(
+				`DELETE FROM attachments WHERE email_id IN (SELECT id FROM emails WHERE received_at < ?)`,
+			)
+			.bind(timestamp)
+			.run();
+		return { success, error, meta };
+	} catch (e: unknown) {
+		const error = e instanceof Error ? e : new Error(String(e));
+		return { success: false, error: error, meta: undefined };
+	}
+}
+
+/**
  * Delete emails older than a specific timestamp
  */
 export async function deleteOldEmails(db: D1Database, timestamp: number) {

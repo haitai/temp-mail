@@ -128,8 +128,9 @@ export async function handleEmail(
 		const { success, error } = await db.insertEmail(env.D1, emailData);
 
 		if (!success) {
-			logError(`Failed to insert email ${emailId}`, new Error(error || "Unknown error"));
-			throw new Error(`Failed to insert email: ${error}`);
+			const err = error instanceof Error ? error : new Error(error || "Unknown error");
+			logError(`Failed to insert email ${emailId}`, err);
+			throw err;
 		}
 
 		logInfo("Email stored successfully", {
