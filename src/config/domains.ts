@@ -7,6 +7,10 @@ export const DOMAINS = [
 	},
 	{
 		owner: "None",
+		domain: "haitai.eu.cc",
+	},
+	{
+		owner: "None",
 		domain: "haitai.ggff.net",
 	},
 	{
@@ -20,6 +24,14 @@ export const DOMAINS = [
 	{
 		owner: "None",
 		domain: "haitai.dpdns.org",
+	},
+	{
+		owner: "None",
+		domain: "haitai.kdns.fr",
+	},
+	{
+		owner: "None",
+		domain: "haitai.indevs.in",
 	},
 ] satisfies {
 	owner: string;
