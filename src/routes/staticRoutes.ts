@@ -1043,16 +1043,27 @@ function generateRandomPrefixString() {
 	return randomString;
 }
 
+// 复制成功后切换图标为绿色对勾
+function showCopySuccess(btn) {
+	const originalSvg = btn.innerHTML;
+	btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+	btn.style.color = '#22c55e';
+	setTimeout(() => {
+		btn.innerHTML = originalSvg;
+		btn.style.color = '';
+	}, 1500);
+}
+
 // 复制邮箱地址
 async function copyEmail() {
 	try {
 		await navigator.clipboard.writeText(currentEmail);
-		showNotification('邮箱地址已复制到剪贴板', 'success');
+		showCopySuccess(copyEmailBtn);
 	} catch (error) {
 		// 降级方案
 		emailInput.select();
 		document.execCommand('copy');
-		showNotification('邮箱地址已复制到剪贴板', 'success');
+		showCopySuccess(copyEmailBtn);
 	}
 }
 
@@ -1065,12 +1076,12 @@ async function copyUrl() {
 	
 	try {
 		await navigator.clipboard.writeText(emailUrlInput.value);
-		showNotification('URL已复制到剪贴板', 'success');
+		showCopySuccess(copyUrlBtn);
 	} catch (error) {
 		// 降级方案
 		emailUrlInput.select();
 		document.execCommand('copy');
-		showNotification('URL已复制到剪贴板', 'success');
+		showCopySuccess(copyUrlBtn);
 	}
 }
 
