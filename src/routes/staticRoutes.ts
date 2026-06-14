@@ -244,7 +244,7 @@ body {
 	right: 8px;
 	top: 40%;
 	transform: translateY(-50%);
-	background: none;
+	background: var(--input-bg);
 	border: none;
 	cursor: pointer;
 	padding: 4px;
