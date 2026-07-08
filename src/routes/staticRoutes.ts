@@ -1671,7 +1671,7 @@ staticRoutes.get("/:email", async (c) => {
 						<!-- 刷新按钮已移至右栏标题 -->
 					</div>
 					<div class="email-info">
-						<p>邮箱将在24小时后自动删除</p>
+						<p>邮件将在24小时后自动删除</p>
 						<p>支持接收附件，最大50MB</p>
 					</div>
 				</div>
@@ -1823,7 +1823,7 @@ staticRoutes.get("/", async (c) => {
 						<!-- 刷新按钮已移至右栏标题 -->
 					</div>
 					<div class="email-info">
-						<p>邮箱将在24小时后自动删除</p>
+						<p>邮件将在24小时后自动删除</p>
 						<p>支持接收附件，最大50MB</p>
 					</div>
 				</div>
