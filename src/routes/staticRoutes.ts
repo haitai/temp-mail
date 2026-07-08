@@ -569,6 +569,17 @@ body {
 .modal-header h3 {
 	margin: 0;
 	color: var(--text-primary);
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.modal-header-actions {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex-shrink: 0;
 }
 
 .close-btn {
@@ -591,7 +602,6 @@ body {
 	border: none;
 	cursor: pointer;
 	padding: 4px;
-	margin-right: 8px;
 	color: var(--text-secondary);
 	display: flex;
 	align-items: center;
@@ -1287,7 +1297,7 @@ function saveEmailAsEml() {
 	document.body.removeChild(a);
 	URL.revokeObjectURL(url);
 	
-	showNotification('邮件已保存', 'success');
+	setTimeout(function() { showNotification('邮件已保存', 'success'); }, 100);
 }
 
 // 清空收件箱
@@ -1787,14 +1797,16 @@ staticRoutes.get("/:email", async (c) => {
 		<div class="modal-content">
 			<div class="modal-header">
 				<h3 id="modalSubject">邮件详情</h3>
-				<button id="saveEmailBtn" class="save-btn" title="保存邮件">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-						<polyline points="17 21 17 13 7 13 7 21"></polyline>
-						<polyline points="7 3 7 8 15 8"></polyline>
-					</svg>
-				</button>
-				<button id="closeModal" class="close-btn">&times;</button>
+				<div class="modal-header-actions">
+					<button id="saveEmailBtn" class="save-btn" title="下载邮件">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+							<polyline points="7 10 12 15 17 10"></polyline>
+							<line x1="12" y1="15" x2="12" y2="3"></line>
+						</svg>
+					</button>
+					<button id="closeModal" class="close-btn">&times;</button>
+				</div>
 			</div>
 			<div class="modal-body">
 				<div class="email-details">
@@ -1946,14 +1958,16 @@ staticRoutes.get("/", async (c) => {
 		<div class="modal-content">
 			<div class="modal-header">
 				<h3 id="modalSubject">邮件详情</h3>
-				<button id="saveEmailBtn" class="save-btn" title="保存邮件">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-						<polyline points="17 21 17 13 7 13 7 21"></polyline>
-						<polyline points="7 3 7 8 15 8"></polyline>
-					</svg>
-				</button>
-				<button id="closeModal" class="close-btn">&times;</button>
+				<div class="modal-header-actions">
+					<button id="saveEmailBtn" class="save-btn" title="下载邮件">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+							<polyline points="7 10 12 15 17 10"></polyline>
+							<line x1="12" y1="15" x2="12" y2="3"></line>
+						</svg>
+					</button>
+					<button id="closeModal" class="close-btn">&times;</button>
+				</div>
 			</div>
 			<div class="modal-body">
 				<div class="email-details">
