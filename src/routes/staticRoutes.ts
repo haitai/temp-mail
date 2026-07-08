@@ -586,6 +586,25 @@ body {
 	transition: color 0.2s ease;
 }
 
+.save-btn {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	margin-right: 8px;
+	color: var(--text-secondary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+	color: var(--text-primary);
+	background-color: var(--bg-hover);
+}
+
 .close-btn:hover {
 	color: var(--text-primary);
 }
@@ -835,6 +854,8 @@ const inboxEmpty = document.getElementById('inboxEmpty');
 const inboxList = document.getElementById('inboxList');
 const emailModal = document.getElementById('emailModal');
 const closeModal = document.getElementById('closeModal');
+const saveEmailBtn = document.getElementById('saveEmailBtn');
+let currentModalEmail = null; // 当前打开的邮件数据
 
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
@@ -886,6 +907,7 @@ function setupEventListeners() {
 	refreshBtn.addEventListener('click', refreshInbox);
 	clearBtn.addEventListener('click', clearInbox);
 	closeModal.addEventListener('click', closeEmailModal);
+	saveEmailBtn.addEventListener('click', saveEmailAsEml);
 	
 	// 实时更新邮箱地址预览
 	emailPrefixInput.addEventListener('input', updateEmailPreview);
@@ -1186,6 +1208,7 @@ async function showEmailDetail(emailId) {
 
 // 显示邮件模态框
 async function displayEmailModal(email) {
+	currentModalEmail = email; // 保存当前邮件数据
 	document.getElementById('modalSubject').textContent = email.subject || '无主题';
 	document.getElementById('modalFrom').textContent = email.from_address;
 	document.getElementById('modalTo').textContent = email.to_address;
@@ -1215,6 +1238,56 @@ async function displayEmailModal(email) {
 // 关闭邮件模态框
 function closeEmailModal() {
 	emailModal.style.display = 'none';
+	currentModalEmail = null;
+}
+
+// 保存邮件为 .eml 文件
+function saveEmailAsEml() {
+	if (!currentModalEmail) return;
+	
+	const email = currentModalEmail;
+	const lines = [];
+	
+	// EML 头部
+	lines.push('From: ' + (email.from_address || ''));
+	lines.push('To: ' + (email.to_address || ''));
+	lines.push('Subject: ' + (email.subject || '无主题'));
+	lines.push('Date: ' + new Date(email.received_at).toUTCString());
+	lines.push('MIME-Version: 1.0');
+	
+	// 根据内容类型设置 Content-Type
+	if (email.html_content) {
+		lines.push('Content-Type: text/html; charset=UTF-8');
+		lines.push('Content-Transfer-Encoding: 8bit');
+		lines.push('');
+		lines.push(email.html_content);
+	} else if (email.text_content) {
+		lines.push('Content-Type: text/plain; charset=UTF-8');
+		lines.push('Content-Transfer-Encoding: 8bit');
+		lines.push('');
+		lines.push(email.text_content);
+	} else {
+		lines.push('Content-Type: text/plain; charset=UTF-8');
+		lines.push('Content-Transfer-Encoding: 8bit');
+		lines.push('');
+		lines.push('无内容');
+	}
+	
+	const emlContent = lines.join('\r\n');
+	const blob = new Blob([emlContent], { type: 'message/rfc822' });
+	const url = URL.createObjectURL(blob);
+	const a = document.createElement('a');
+	a.href = url;
+	// 文件名：主题_时间.eml，清理不合法字符
+	const safeSubject = (email.subject || '无主题').replace(/[<>:"/\\|?*]/g, '_').substring(0, 50);
+	const dateStr = new Date(email.received_at).toISOString().slice(0, 10);
+	a.download = safeSubject + '_' + dateStr + '.eml';
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+	URL.revokeObjectURL(url);
+	
+	showNotification('邮件已保存', 'success');
 }
 
 // 清空收件箱
@@ -1714,6 +1787,13 @@ staticRoutes.get("/:email", async (c) => {
 		<div class="modal-content">
 			<div class="modal-header">
 				<h3 id="modalSubject">邮件详情</h3>
+				<button id="saveEmailBtn" class="save-btn" title="保存邮件">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+						<polyline points="17 21 17 13 7 13 7 21"></polyline>
+						<polyline points="7 3 7 8 15 8"></polyline>
+					</svg>
+				</button>
 				<button id="closeModal" class="close-btn">&times;</button>
 			</div>
 			<div class="modal-body">
@@ -1866,6 +1946,13 @@ staticRoutes.get("/", async (c) => {
 		<div class="modal-content">
 			<div class="modal-header">
 				<h3 id="modalSubject">邮件详情</h3>
+				<button id="saveEmailBtn" class="save-btn" title="保存邮件">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+						<polyline points="17 21 17 13 7 13 7 21"></polyline>
+						<polyline points="7 3 7 8 15 8"></polyline>
+					</svg>
+				</button>
 				<button id="closeModal" class="close-btn">&times;</button>
 			</div>
 			<div class="modal-body">
