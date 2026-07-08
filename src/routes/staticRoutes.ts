@@ -154,6 +154,7 @@ body {
 	padding: 30px;
 	box-shadow: 0 2px 10px var(--shadow-sm);
 	height: fit-content;
+	min-width: 0;
 	transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -185,12 +186,12 @@ body {
 
 .email-input-group input {
 	flex: 1;
+	min-width: 0;
 	border: none;
 	background: transparent;
 	font-size: 1rem;
 	outline: none;
 	color: var(--text-primary);
-	width: 50%;
 }
 
 .email-separator {
@@ -201,6 +202,7 @@ body {
 
 .domain-select {
 	flex: 1;
+	min-width: 0;
 	border: none;
 	background: transparent;
 	font-size: 1rem;
@@ -327,6 +329,7 @@ body {
 	box-shadow: 0 2px 10px var(--shadow-sm);
 	display: flex;
 	flex-direction: column;
+	min-width: 0;
 	transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
