@@ -1262,7 +1262,7 @@ function saveEmailAsEml() {
 	lines.push('From: ' + (email.from_address || ''));
 	lines.push('To: ' + (email.to_address || ''));
 	lines.push('Subject: ' + (email.subject || '无主题'));
-	lines.push('Date: ' + new Date(email.received_at).toUTCString());
+	lines.push('Date: ' + new Date(email.received_at * 1000).toUTCString());
 	lines.push('MIME-Version: 1.0');
 	
 	// 根据内容类型设置 Content-Type
@@ -1290,7 +1290,7 @@ function saveEmailAsEml() {
 	a.href = url;
 	// 文件名：主题_时间.eml，清理不合法字符
 	const safeSubject = (email.subject || '无主题').replace(/[<>:"/\\|?*]/g, '_').substring(0, 50);
-	const dateStr = new Date(email.received_at).toISOString().slice(0, 10);
+	const dateStr = new Date(email.received_at * 1000).toISOString().slice(0, 10);
 	a.download = safeSubject + '_' + dateStr + '.eml';
 	document.body.appendChild(a);
 	a.click();
