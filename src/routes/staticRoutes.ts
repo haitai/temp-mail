@@ -1273,7 +1273,7 @@ function saveEmailAsEml() {
 		lines.push('无内容');
 	}
 	
-	const emlContent = lines.join('\r\n');
+	const emlContent = lines.join('\\r\\n');
 	const blob = new Blob([emlContent], { type: 'message/rfc822' });
 	const url = URL.createObjectURL(blob);
 	const a = document.createElement('a');
