@@ -3,41 +3,48 @@
 export const DOMAINS = [
 	{
 		owner: "None",
-		domain: "haitai.pp.ua",
+		domain: "594.de5.net",
 	},
 	{
 		owner: "None",
-		domain: "haitai.eu.cc",
+		domain: "auko.pp.ua",
 	},
 	{
 		owner: "None",
-		domain: "haitai.dpdns.org",
+		domain: "bihu.eu.cc",
 	},
 	{
+		owner: "None",
+		domain: "btw.cc.cd",
+	},
+	{
+		owner: "None",
+		domain: "disc.us.ci",
+	},
+	{
+		owner: "None",
+		domain: "fav.indevs.in",
+	},
+	{
+		owner: "None",
+		domain: "from.sryze.cc",
+	},
+		{
 		owner: "None",
 		domain: "haitai.qzz.io",
 	},
 	{
 		owner: "None",
-		domain: "haitai.de5.net",
-	},
-	{
-		owner: "None",
-		domain: "haitai.kdns.fr",
-	},
-	{
-		owner: "None",
-		domain: "haitai.indevs.in",
-	},
-	{
-		owner: "None",
-		domain: "haitai.ggff.net",
+		domain: "pigu.kdns.fr",
 	},	
 	{
 		owner: "None",
-		domain: "haitai.web.id",
+		domain: "t4i.dpdns.org",
 	},
-
+	{
+		owner: "None",
+		domain: "temp.ccwu.cc",
+	},
 ] satisfies {
 	owner: string;
 	domain: string;
