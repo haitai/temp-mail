@@ -14,6 +14,8 @@ interface CounterBucket {
 
 // Cleanup is probabilistic so a busy limiter never scans all keys on every request.
 const CLEANUP_PROBABILITY = 0.01;
+// Bound the scan so an attacker using many IPs cannot blow up DO memory during cleanup.
+const CLEANUP_SCAN_LIMIT = 500;
 
 /**
  * Strongly consistent fixed-window counter for the API rate limiter.
@@ -49,7 +51,10 @@ export class RateLimiter extends DurableObject {
 	}
 
 	private async cleanupExpired(now: number): Promise<void> {
-		const buckets = await this.ctx.storage.list<CounterBucket>({ prefix: "rl:" });
+		const buckets = await this.ctx.storage.list<CounterBucket>({
+			prefix: "rl:",
+			limit: CLEANUP_SCAN_LIMIT,
+		});
 		const expired: string[] = [];
 		for (const [key, bucket] of buckets) {
 			if (bucket.resetAt <= now) expired.push(key);
