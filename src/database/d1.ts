@@ -191,6 +191,27 @@ export async function countEmailsByRecipient(db: D1Database, emailAddress: strin
 }
 
 /**
+ * Count emails received by an address since a given timestamp.
+ * Used to reject inbox flooding before parsing/storing the message.
+ */
+export async function countRecentEmailsByRecipient(
+	db: D1Database,
+	emailAddress: string,
+	since: number,
+) {
+	try {
+		const result = await db
+			.prepare("SELECT count(*) as count FROM emails WHERE to_address = ? AND received_at >= ?")
+			.bind(emailAddress, since)
+			.first<{ count: number }>();
+		return { count: result?.count || 0, error: undefined };
+	} catch (e: unknown) {
+		const error = e instanceof Error ? e : new Error(String(e));
+		return { count: 0, error: error };
+	}
+}
+
+/**
  * Insert an attachment into the database
  */
 export async function insertAttachment(db: D1Database, attachmentData: Attachment) {

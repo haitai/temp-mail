@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import PostalMime from "postal-mime";
-import { ATTACHMENT_LIMITS } from "@/config/constants";
+import { ATTACHMENT_LIMITS, EMAIL_LIMITS } from "@/config/constants";
 import * as db from "@/database/d1";
 import * as r2 from "@/database/r2";
 import { emailSchema } from "@/schemas/emails";
@@ -75,6 +75,44 @@ function validateAttachments(attachments: EmailAttachment[], emailId: string): E
 }
 
 /**
+ * Cheap abuse checks run before parsing or touching D1/R2.
+ * Returns false when the message has been rejected via setReject().
+ */
+async function passesAbuseChecks(message: ForwardableEmailMessage, env: CloudflareBindings) {
+	if (message.rawSize > EMAIL_LIMITS.MAX_RAW_SIZE) {
+		logInfo("Rejected oversized email", {
+			from: message.from,
+			to: message.to,
+			size: message.rawSize,
+		});
+		message.setReject("Message exceeds the maximum allowed size");
+		return false;
+	}
+
+	const blockedSenders = (env.BLOCKED_SENDERS || "")
+		.split(",")
+		.map((sender) => sender.trim().toLowerCase())
+		.filter(Boolean);
+	const lowerFrom = message.from.toLowerCase();
+	if (blockedSenders.some((sender) => lowerFrom === sender || lowerFrom.endsWith(`@${sender}`))) {
+		logInfo("Rejected blocked sender", { from: message.from, to: message.to });
+		message.setReject("Sender is blocked");
+		return false;
+	}
+
+	const since = now() - EMAIL_LIMITS.WINDOW_SECONDS;
+	const { count, error } = await db.countRecentEmailsByRecipient(env.D1, message.to, since);
+	if (!error && count >= EMAIL_LIMITS.MAX_PER_ADDRESS_PER_WINDOW) {
+		logInfo("Rejected inbox flood", { to: message.to, recent_count: count });
+		message.setReject("Inbox rate limit exceeded");
+		return false;
+	}
+	// Fail open on D1 errors so a database hiccup never silently drops mail.
+	if (error) logError("Failed to check inbound rate limit", error, { to: message.to });
+	return true;
+}
+
+/**
  * Cloudflare email router handler - optimized version
  */
 export async function handleEmail(
@@ -85,6 +123,8 @@ export async function handleEmail(
 	try {
 		const timer = new PerformanceTimer("email-processing");
 		const emailId = createId();
+
+		if (!(await passesAbuseChecks(message, env))) return;
 
 		logDebug("Email processing started", {
 			emailId,

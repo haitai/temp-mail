@@ -5,6 +5,7 @@ import staticRoutes from "@/routes/staticRoutes";
 import { setupDocumentation } from "@/utils/docs";
 import { initLogger, logDebug, logError } from "@/utils/logger";
 import corsMiddleware from "./middlewares/cors";
+import rateLimitMiddleware from "./middlewares/rateLimit";
 import healthRoutes from "./routes/healthRoutes";
 import { ERR } from "./utils/http";
 
@@ -12,6 +13,8 @@ const app = new OpenAPIHono<{ Bindings: CloudflareBindings }>();
 
 // --- Middlewares ---
 app.use(corsMiddleware);
+// Rate limiting runs before logging so rejected traffic does not cost extra work.
+app.use("*", rateLimitMiddleware());
 
 // Initialize logger with environment configuration
 app.use(async (c, next) => {

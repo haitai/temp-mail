@@ -3,6 +3,9 @@ import app from "@/app";
 import { handleEmail } from "@/handlers/emailHandler";
 import { handleScheduled } from "@/handlers/scheduledHandler";
 
+// Durable Object class must be exported from the Worker entry point.
+export { RateLimiter } from "@/durable-objects/rateLimiter";
+
 export default {
 	// Hono ( Cloudflare Worker )
 	fetch: app.fetch,

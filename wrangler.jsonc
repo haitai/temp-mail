@@ -25,12 +25,28 @@
 			"preview_bucket_name": "temp-mail-attachments-preview"
 		}
 	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "RATE_LIMITER",
+				"class_name": "RateLimiter"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": ["RateLimiter"]
+		}
+	],
 	"triggers": {
 		"crons": ["0 */2 * * *"]
 	},
 	"vars": {
 		"TELEGRAM_LOG_ENABLE": true,
-		"HOURS_TO_DELETE_D1": 24
+		"HOURS_TO_DELETE_D1": 24,
+		"BLOCKED_SENDERS": "",
+		"ALLOWED_ORIGINS": ""
 	},
 	// "assets": { "directory": "./public/" },
 	/**

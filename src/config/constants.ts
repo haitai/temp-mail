@@ -48,3 +48,20 @@ export const HTML_PROCESSING = {
 export const CACHE = {
 	DOMAINS_TTL: 3600, // 1 hour
 } as const;
+
+// API abuse protection. Thresholds are per minute.
+// PER_IP is generous enough for the web client's 30s inbox polling.
+export const RATE_LIMIT = {
+	ENABLED: true,
+	WINDOW_MS: 60_000,
+	PER_IP: 180,
+	PER_IP_WRITE: 30,
+	PER_ADDRESS: 60,
+} as const;
+
+// Inbound email abuse protection
+export const EMAIL_LIMITS = {
+	MAX_RAW_SIZE: 25 * 1024 * 1024, // 25MB for the raw message
+	MAX_PER_ADDRESS_PER_WINDOW: 30,
+	WINDOW_SECONDS: 60,
+} as const;
